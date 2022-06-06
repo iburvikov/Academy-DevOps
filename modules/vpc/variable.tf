@@ -17,3 +17,7 @@ variable "vpc_cidr" {
 variable "tags" {
   type = map(string)
 }
+
+locals {
+  az_num = length(data.aws_availability_zones.available.names)
+}
