@@ -71,7 +71,6 @@ resource "aws_security_group" "aws_sg" {
   name   = "sg_lab1"
   tags   = var.tags
   vpc_id = aws_vpc.lab1.id
-   
 
     egress { 
     from_port   = 0
@@ -111,13 +110,13 @@ resource "aws_security_group_rule" "https" {
   security_group_id = aws_security_group.aws_sg.id
 }
 
-resource "aws_route_table" "rt_private" {
+resource "aws_route_table" "all_subnets" {
   vpc_id = aws_vpc.lab1.id
 
   tags = merge(
     var.tags,
     {
-      Name = "private_routing"
+      Name = "all_subnets"
     }
   )
 }
@@ -125,5 +124,11 @@ resource "aws_route_table" "rt_private" {
 resource "aws_route_table_association" "rt_associate_private" {
   count          = length(aws_subnet.private)
   subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.rt_private.id
+  route_table_id = aws_route_table.all_subnets.id
+}
+
+resource "aws_route_table_association" "rt_associate_public" {
+  count          = length(aws_subnet.public)
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.all_subnets.id
 }
